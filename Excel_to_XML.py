@@ -2,22 +2,22 @@
 # writes them to XML for import into geoportal
 
 import sys
-import os
-import owslib.iso
+#import os
+#import owslib.iso
 from owslib.iso import *
-from tests.utils import resource_file
+#from tests.utils import resource_file
 import urllib2
 from owslib.etree import etree
 SubElement = etree.SubElement
 Element = etree.Element
 toString = etree.tostring
 from owslib.iso import CodelistCatalogue
-import xlrd   # xlrd to extract values from cells
-import uuid   #guid used for file ID
+import xlrd  # xlrd to extract values from cells
+import uuid  # guid used for file ID
 
-#this block is used to references code dictionaries
-e=etree.fromstring(urllib2.urlopen('http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml').read())
-c=CodelistCatalogue(e)
+#  this block is used to references code dictionaries
+e = etree.fromstring(urllib2.urlopen('http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml').read())
+c = CodelistCatalogue(e)
 c.getcodelistdictionaries()
 c.getcodedefinitionidentifiers('MD_SpatialRepresentationTypeCode')
 c.getcodedefinitionidentifiers('MD_TopicCategoryCode')
@@ -110,19 +110,21 @@ def matchTopicCategory(aCategory):
            'Facilities and Structures':'structure',
            'Atmosphere and Climatic':'climatologyMeteorologyAtmosphere'
            }[aCategory]
-        
-for i in range(106, 107):   #range of resources; starts at 1 because first row is column headers
+
+start_row = 1
+end_row = 107
+for i in range(start_row, end_row):   #range of resources; starts at 1 because first row is column headers
     try:
-        etree.parse("resource_%i.xml" %i)
+        etree.parse("resource_%i.xml" % i)
         print "File found for resource_%i. File identifier will be retained" %i
-        root = etree.parse("resource_%i.xml" %i).getroot()
+        root = etree.parse("resource_%i.xml" % i).getroot()
         fileIDText = root.findtext('{http://www.isotc211.org/2005/gmd}fileIdentifier/{http://www.isotc211.org/2005/gco}CharacterString')
         print "File Identifier: " + fileIDText
         fileExists=True
     except IOError:
-        print "File not found for resource_%i.xml. Creating new file..." %i
+        print "File not found for resource_%i.xml. Creating new file..." % i
         fileExists=False
-    root = Element('{http://www.isotc211.org/2005/gmd}MD_Metadata', {} ,{'gmd':'http://www.isotc211.org/2005/gmd','gco':'http://www.isotc211.org/2005/gco',
+    root = Element('{http://www.isotc211.org/2005/gmd}MD_Metadata', {}, {'gmd':'http://www.isotc211.org/2005/gmd','gco':'http://www.isotc211.org/2005/gco',
                                        'gml':'http://www.opengis.net/gml/3.2','srv': 'http://www.isotc211.org/2005/srv'})
     fileIdentifier = SubElement(root, '{http://www.isotc211.org/2005/gmd}fileIdentifier')
     fileID = SubElement(fileIdentifier, '{http://www.isotc211.org/2005/gco}CharacterString')
@@ -260,8 +262,8 @@ for i in range(106, 107):   #range of resources; starts at 1 because first row i
     voicePhone=SubElement(voice, '{http://www.isotc211.org/2005/gco}CharacterString')
     voicePhone.text=sh.cell_value(i, 21)
     facsimile=SubElement(CI_Telephone, '{http://www.isotc211.org/2005/gmd}facsimile')
-    fax=SubElement(facsimile, '{http://www.isotc211.org/2005/gco}CharacterString')
-    fax=sh.cell_value(i, 22)
+    fax = SubElement(facsimile, '{http://www.isotc211.org/2005/gco}CharacterString')
+    fax = sh.cell_value(i, 22)
     address=SubElement(CI_Contact, '{http://www.isotc211.org/2005/gmd}address')
     CI_Address=SubElement(address, '{http://www.isotc211.org/2005/gmd}CI_Address')
     deliveryPoint=SubElement(CI_Address, '{http://www.isotc211.org/2005/gmd}deliveryPoint')
@@ -318,8 +320,8 @@ for i in range(106, 107):   #range of resources; starts at 1 because first row i
     fileName=SubElement(MD_BrowseGraphic, '{http://www.isotc211.org/2005/gmd}fileName')
     fileNameString=SubElement(fileName, '{http://www.isotc211.org/2005/gco}CharacterString')
     fileNameString.text=sh.cell_value(i, 38)
-    fileDescription=SubElement(MD_BrowseGraphic, '{http://www.isotc211.org/2005/gmd}fileDescription')
-    fileDescription=SubElement(fileDescription, '{http://www.isotc211.org/2005/gco}CharacterString')
+    fileDescription_0 = SubElement(MD_BrowseGraphic, '{http://www.isotc211.org/2005/gmd}fileDescription')
+    fileDescription=SubElement(fileDescription_0, '{http://www.isotc211.org/2005/gco}CharacterString')
     fileDescriptionString=sh.cell_value(i, 39)
     fileType=SubElement(MD_BrowseGraphic, '{http://www.isotc211.org/2005/gmd}fileType')
     fileTypeString=SubElement(fileType, '{http://www.isotc211.org/2005/gco}CharacterString')
